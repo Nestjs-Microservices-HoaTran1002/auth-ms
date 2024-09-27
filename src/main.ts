@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-import { envs } from 'config';
+import { envs } from './config';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
@@ -9,15 +9,19 @@ async function bootstrap() {
     AppModule,
     {
       transport: Transport.NATS,
-      options:{
-        servers: envs.natsServers
-      }
+      options: {
+        servers: envs.natsServers,
+      },
     },
   );
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true
-  }))
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
+
   await app.listen();
 }
 bootstrap();
